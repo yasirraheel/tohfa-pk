@@ -83,7 +83,7 @@
 				 <div class="col-sm-10">
 					 <select name="TIMEZONE" class="form-select select" id="timezoneSelect">
 						 @php
-							 $currentTimezone = env('TIMEZONE', 'UTC');
+							 $currentTimezone = config('app.timezone', 'UTC');
 						 @endphp
 						 @include('includes.timezone-new')
 					</select>

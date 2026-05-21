@@ -391,6 +391,9 @@ class AdminController extends Controller
 			]);
 		}
 
+		\Artisan::call('cache:clear');
+		\Artisan::call('config:clear');
+
 		return redirect('panel/admin/settings')->withSuccessMessage(__('admin.success_update'));
 	}
 
@@ -1082,6 +1085,9 @@ class AdminController extends Controller
 		foreach ($request->except(['_token']) as $key => $value) {
 			Helper::envUpdate($key, $value);
 		}
+
+		\Artisan::call('cache:clear');
+		\Artisan::call('config:clear');
 
 		return back()->withSuccessMessage(trans('admin.success_update'));
 	} // End Method

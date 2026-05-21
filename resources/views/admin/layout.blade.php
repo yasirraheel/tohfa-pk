@@ -11,6 +11,8 @@
     <link href="{{ asset('public/css/core.min.css') }}?v={{$settings->version}}" rel="stylesheet">
     <link href="{{ asset('public/css/bootstrap.min.css') }}?v={{$settings->version}}" rel="stylesheet">
     <link href="{{ asset('public/css/bootstrap-icons.css') }}?v={{$settings->version}}" rel="stylesheet">
+    <link href="{{ asset('public/js/select2/select2.min.css') }}?v={{$settings->version}}" rel="stylesheet">
+    <link href="{{ asset('public/js/select2/select2-bootstrap-5-theme.min.css') }}?v={{$settings->version}}" rel="stylesheet">
     <link href="{{ asset('public/css/admin-styles.css') }}?v={{$settings->version}}" rel="stylesheet">
     <link href="{{ asset('public/css/styles.css') }}?v={{$settings->version}}" rel="stylesheet">
 
@@ -21,7 +23,7 @@
         var yes_confirm = "{{trans('misc.yes_confirm')}}";
         var yes = "{{trans('misc.yes')}}";
         var cancel_confirm = "{{trans('misc.cancel_confirm')}}";
-        var timezone = "{{env('TIMEZONE')}}";
+        var timezone = "{{config('app.timezone')}}";
         var darkMode = "{{ __('misc.dark_mode') }}";
         var lightMode = "{{ __('misc.light_mode') }}";
      </script>

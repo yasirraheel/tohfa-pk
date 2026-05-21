@@ -635,14 +635,19 @@ class Helper
 	{
 		$path = base_path('.env');
 		$value = trim($value);
-		$env = $comma ? '"' . env($key) . '"' : env($key);
 
 		if (file_exists($path)) {
-			file_put_contents($path, str_replace(
-				$key . '=' . $env,
-				$key . '=' . $value,
-				file_get_contents($path)
-			));
+			$content = file_get_contents($path);
+			
+			if (preg_match("/^" . preg_quote($key, '/') . "=/m", $content)) {
+				// Key exists, replace the line
+				$content = preg_replace("/^" . preg_quote($key, '/') . "=.*/m", $key . '=' . $value, $content);
+			} else {
+				// Key does not exist, append it
+				$content .= "\n" . $key . '=' . $value;
+			}
+			
+			file_put_contents($path, $content);
 		}
 	}
 

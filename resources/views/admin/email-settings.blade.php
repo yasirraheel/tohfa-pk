@@ -1,9 +1,6 @@
 @extends('admin.layout')
 
-@section('css')
-<link href="{{ asset('public/js/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('public/js/select2/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet" type="text/css" />
-@endsection
+
 
 @section('content')
 	<h5 class="mb-4 fw-light">
@@ -102,8 +99,9 @@
 						<div class="row mb-3">
 		          <label class="col-sm-2 col-form-labe text-lg-end">{{ trans('misc.default_timezone') }}</label>
 		          <div class="col-sm-10">
-		            <select name="TIMEZONE" class="form-select select">
-									@include('includes.timezone')
+									@php $currentTimezone = config('app.timezone', 'UTC'); @endphp
+		            <select name="TIMEZONE" class="form-select select" id="timezoneSelect">
+									@include('includes.timezone-new')
 		           </select>
 		          </div>
 		        </div>

@@ -1,5 +1,5 @@
 @php
-    $currentTz = $currentTimezone ?? env('TIMEZONE', 'UTC');
+    $currentTz = $currentTimezone ?? config('app.timezone', 'UTC');
 @endphp
 <option value="Africa/Abidjan" {{ $currentTz == 'Africa/Abidjan' ? 'selected' : '' }}>Africa/Abidjan</option>
 <option value="Africa/Accra" {{ $currentTz == 'Africa/Accra' ? 'selected' : '' }}>Africa/Accra</option>

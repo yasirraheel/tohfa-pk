@@ -69,11 +69,22 @@
 		});
 	});
 
-	$('.select option[value="' + timezone + '"]').attr('selected', 'selected');
-
-	$(".select").select2({
+	// Initialize all generic .select dropdowns (excluding timezone which needs special handling)
+	$(".select:not(#timezoneSelect)").select2({
 		theme: "bootstrap-5",
 	});
+
+	// Initialize timezone dropdown with search enabled
+	$("#timezoneSelect").select2({
+		theme: "bootstrap-5",
+		allowClear: false,
+		placeholder: "Select a timezone",
+	});
+
+	// Set saved timezone value AFTER Select2 is initialized
+	if (timezone && timezone !== '') {
+		$("#timezoneSelect").val(timezone).trigger('change');
+	}
 
 	// Delete Post, Categories, Members, Languages, etc...
 	$(".actionDelete").on('click', function (e) {
