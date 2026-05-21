@@ -83,8 +83,7 @@ class SocialAccountService
           'oauth_provider'  => $provider,
 					'token'           => str_random(75),
           'authorized_to_upload' => $settings->who_can_upload == 'all' ? 'yes' : 'no',
-          'ip'              => request()->ip(),
-          'credits'         => $settings->signup_bonus_credits ?? 100 // Assign signup bonus credits
+          'ip'              => request()->ip()
 			]);
 
       // Check Referral

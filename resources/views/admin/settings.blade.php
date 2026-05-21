@@ -66,22 +66,6 @@
          </div>
        </div><!-- end row -->
 
-       <div class="row mb-3">
-         <label class="col-sm-2 col-form-labe text-lg-end">{{ __('misc.sevenlabs_api_key') }}</label>
-         <div class="col-sm-10">
-           <input type="password" value="{{ $settings->sevenlabs_api_key ?? '' }}" name="sevenlabs_api_key" class="form-control" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
-           <small class="d-block text-muted">{{ __('misc.sevenlabs_api_key_info') }}</small>
-         </div>
-       </div><!-- end row -->
-
-       <div class="row mb-3">
-         <label class="col-sm-2 col-form-labe text-lg-end">{{ __('misc.signup_bonus_credits') }}</label>
-         <div class="col-sm-10">
-           <input type="number" value="{{ $settings->signup_bonus_credits ?? 100 }}" name="signup_bonus_credits" class="form-control" placeholder="100" min="0">
-           <small class="d-block text-muted">{{ __('misc.signup_bonus_credits_info') }}</small>
-         </div>
-       </div><!-- end row -->
-
 			 <div class="row mb-3">
 				 <label class="col-sm-2 col-form-labe text-lg-end">{{ __('misc.default_language') }}</label>
 				 <div class="col-sm-10">

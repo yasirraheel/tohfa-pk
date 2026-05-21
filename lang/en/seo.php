@@ -12,9 +12,9 @@ return [
     | you want to customize your views to better match your application.
     |
     */
-    "welcome_text" => "SevenLabs TTS",
-    "welcome_subtitle" => "AI-Powered Text to Speech Generation",
-    "description" => "Convert text to natural-sounding speech with advanced AI technology. Generate high-quality voice synthesis for content creators, developers, and businesses.",
-  	"keywords" => "text to speech,tts,ai voice,voice synthesis,speech generation,voice cloning,ai audio,voice technology",
+    "welcome_text" => "Starter Kit",
+    "welcome_subtitle" => "Ready to build your next project",
+    "description" => "A clean application starter with authentication, pages, blog link support, contact forms, settings, and admin management.",
+    "keywords" => "starter kit,web application,admin panel,authentication,contact form,pages",
 
 ];

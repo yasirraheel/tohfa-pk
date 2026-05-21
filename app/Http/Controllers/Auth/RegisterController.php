@@ -163,8 +163,7 @@ class RegisterController extends Controller
       'oauth_provider'  => '',
 			'token'           => $token,
       'authorized_to_upload' => $authorized_to_upload,
-      'ip'               => request()->ip(),
-      'credits'          => $settings->signup_bonus_credits ?? 100 // Assign signup bonus credits
+      'ip'               => request()->ip()
 		]);
 
 		return $user;

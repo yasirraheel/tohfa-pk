@@ -29,6 +29,10 @@ class ViewServiceProvider extends ServiceProvider
 	{
 		try {
             \DB::connection()->getPdo();
+			
+			if (!\Schema::hasTable('admin_settings')) {
+				return false;
+			}
         } catch (\Exception $e) {
 			return false;
         }
@@ -44,7 +48,7 @@ class ViewServiceProvider extends ServiceProvider
 		$withdrawalsPendingCount = Withdrawals::selectRaw('COUNT(id) as total')->whereStatus('pending')->pluck('total')->first();
 		$usersReported = UsersReported::selectRaw('COUNT(id) as total')->pluck('total')->first();
 
-		// Universal starter kit - set default values for removed stock photo functionality
+		// Universal starter kit defaults for optional content counters.
 		$downloadsCount = 0;
 		$imagesCount = 0;
 

@@ -22,14 +22,11 @@ class DashboardController extends Controller
   // Dashboard
   public function dashboard()
   {
-    // For TTS application, we'll show user's credit information instead of sales
     $user = auth()->user();
     
-    // Get user's current credits and balance
     $userCredits = $user->credits ?? 0;
     $userBalance = $user->balance ?? 0;
     
-    // Initialize empty arrays for chart data (since we don't have sales data)
     $monthsData = [];
     $earningNetUserSum = [];
     $lastSales = [];
@@ -39,11 +36,10 @@ class DashboardController extends Controller
       $date = date('Y-m-d', strtotime('-' . $i . ' day'));
       $formatDate = Helper::formatDateChart($date);
       $monthsData[] = "'$formatDate'";
-      $earningNetUserSum[] = 0; // No earnings data for TTS
-      $lastSales[] = 0; // No sales data for TTS
+      $earningNetUserSum[] = 0;
+      $lastSales[] = 0;
     }
     
-    // Set all revenue stats to 0 since this is a TTS application
     $stat_revenue_today = 0;
     $stat_revenue_yesterday = 0;
     $stat_revenue_week = 0;

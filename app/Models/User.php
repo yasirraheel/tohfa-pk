@@ -276,14 +276,4 @@ class User extends Authenticatable
     return $this->hasMany(UserDevices::class);
   }
 
-  public function userCredits()
-  {
-    return $this->hasOne(UserCredits::class);
-  }
-
-  public function getAvailableCreditsAttribute()
-  {
-    $credits = $this->userCredits;
-    return $credits ? $credits->available_credits : 0;
-  }
 }

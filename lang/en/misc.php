@@ -119,8 +119,8 @@ return array(
 	'welcome'                   =>      'Welcome!',
 	'categories'                =>      'Categories',
 	'category'                  =>      'Category',
-	'browse_by_category'        =>      'Browse stock photos by category',
-	'title_search_bar'          =>      "Find photos: eg. 'Animals'",
+	'browse_by_category'        =>      'Browse by category',
+	'title_search_bar'          =>      "Search: eg. 'Animals'",
 	'members'                   =>      'Members',
 	'downloads'                 =>      'Downloads',
 	'download'                  =>      'Download',
@@ -295,7 +295,7 @@ return array(
 	'yes_withdraw' => 'Yes, withdraw!',
 	'add_funds' => 'Add Funds',
 	'funds' => 'Funds',
-	'add_funds_desc' => 'Add funds - ShahabTech',
+	'add_funds_desc' => 'Add funds',
 	'debit_credit_card' => 'Debit / Credit Card',
 	'handling_fee' => 'Handling fee',
 	'amount_minimum' => 'The minimum amount is :symbol:min :code', // Not remove :symbol:min and :code
@@ -546,7 +546,7 @@ return array(
 	'default_language' => 'Default language',
 	'default_language_info' => 'This language will be taken by default when the user language does not exist.',
 	'alert_pwa_https' => 'You must use HTTPS (SSL) for PWA to work.',
-	'pwa_short_name' => 'App short name (Ex: ShahabTech)',
+	'pwa_short_name' => 'App short name (Ex: Starter)',
 	'connect_stripe_account' => 'Connect Stripe Account',
 	'view_stripe_account' => 'View Stripe account',
 	'connected' => 'Connected',
@@ -619,7 +619,7 @@ return array(
 	'stripe_text_info_5' => 'Please provide your name and e-mail address.',
 	'subscription_plan' => 'Plan :name',// Not remove  :name
 	'subscription_exists' => 'You have an active subscription.',
-	'agree_subscription' => 'By clicking pay you agree to the :terms and authorize ShahabTech to charge your payment method on a recurring basis. You may cancel at any time.', // Not remove :term
+	'agree_subscription' => 'By clicking pay you agree to the :terms and authorize this application to charge your payment method on a recurring basis. You may cancel at any time.', // Not remove :term
 	'terms_services' => 'Terms of service',
 	'subscription' => 'Subscription',
 	'subscription_success' => 'Subscription created successfully!',
@@ -712,14 +712,5 @@ return array(
 	// Version 5.0
 	'default_theme' => 'Default theme',
 
-	// SevenLabs API
-	'sevenlabs_api_key' => 'SevenLabs API Key',
-	'sevenlabs_api_key_info' => 'Enter your SevenLabs API key to enable voice synthesis features',
-	'signup_bonus_credits' => 'Signup Bonus Credits',
-	'signup_bonus_credits_info' => 'Number of credits to give new users when they sign up',
-	'system_balance' => 'System Balance',
-	'system_credits' => 'System Credits',
-	'text_to_speech' => 'Text to Speech',
-	'task_history' => 'Task History',
 	'services' => 'Services',
 );

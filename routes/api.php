@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PushNotificationsController;
-use App\Http\Controllers\Api\TtsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +21,3 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('device/register', [PushNotificationsController::class, 'registerDevice']);
 Route::get('device/delete', [PushNotificationsController::class, 'deleteDevice']);
-
-// TTS API Routes (moved to web.php for session auth)
-// Generate TTS route moved to web.php for session-based authentication
-
-// User Credits Route moved to web.php for session-based auth

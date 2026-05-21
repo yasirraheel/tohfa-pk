@@ -28,7 +28,7 @@
             <input class="form-control form-control-lg ps-5 input-search-lg border-0 search-lg" type="text" name="q" autocomplete="off" placeholder="{{__('misc.search')}}" required minlength="3">
           </form>
 
-		  @if ($categoryPopular)
+		  @if (isset($categoryPopular) && $categoryPopular)
           <p class="mt-2 text-white linkCategoryPopular">
             <strong>{{__('misc.popular_categories')}}</strong> {!! $categoryPopular !!}
           </p>
@@ -41,86 +41,76 @@
 
 <div class="container-fluid py-5 py-large">
 
-	@if ($images->count() != 0)
-
-  @if ($settings->show_images_index == 'featured' || $settings->show_images_index == 'both')
-
+  {{-- Featured Content Section --}}
   <div class="btn-block text-center mb-5">
-    <h3 class="m-0">{{__('misc.featured_photos')}}</h3>
+    <h3 class="m-0">{{ __('misc.welcome_to_platform') ?? 'Welcome to Our Platform' }}</h3>
     <p>
-      {{ __('misc.featured_desc') }}
+      {{ __('misc.platform_description') ?? 'Your universal starter kit for building amazing applications' }}
     </p>
   </div>
 
-  @include('includes.images', ['images' => $featured, 'imgFeatured' => true])
-
-  <div class="w-100 d-block text-center mt-5">
-    <a href="{{ url('featured') }}" class="btn btn-lg btn-main rounded-pill btn-custom px-4 arrow px-5">
-      {{ __('misc.view_all') }}
-    </a>
-  </div>
-  @endif
-
-  @if ($settings->show_images_index == 'latest' || $settings->show_images_index == 'both')
-    <div class="btn-block text-center mb-5 @if ($settings->show_images_index == 'both') mt-5 @endif">
-      <h3 class="m-0">{{__('misc.recent_photos')}}</h3>
-      <p>
-        {{ __('misc.latest_desc') }}
-      </p>
-  </div>
-
-  @include('includes.images')
-
-  <div class="w-100 d-block text-center mt-5">
-    <a href="{{ url('latest') }}" class="btn btn-lg btn-main rounded-pill btn-custom px-4 arrow px-5">
-      {{ __('misc.view_all') }}
-    </a>
-  </div>
-  @endif
-    
-	@else
-	<h4 class="text-center">
-      <div class="d-block w-100 display-2">
-        <i class="bi bi-images"></i>
+  {{-- Content Grid - Ready for your custom content --}}
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <i class="bi bi-lightning-charge display-4 text-primary mb-3"></i>
+          <h5 class="card-title">Fast & Secure</h5>
+          <p class="card-text">Built with Laravel 11 for optimal performance and security.</p>
+        </div>
       </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <i class="bi bi-credit-card display-4 text-success mb-3"></i>
+          <h5 class="card-title">Payment Ready</h5>
+          <p class="card-text">Multiple payment gateways integrated and ready to use.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body text-center">
+          <i class="bi bi-globe display-4 text-info mb-3"></i>
+          <h5 class="card-title">Multi-language</h5>
+          <p class="card-text">Support for multiple languages and internationalization.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-		{{ __('misc.no_images_published') }}
-	</h4>
-
-  <div class="w-100 d-block text-center mt-3">
-    <a href="{{ url('upload') }}" class="btn btn-lg btn-main rounded-pill btn-custom px-4 arrow px-5">
-      {{ __('users.upload') }}
+  <div class="w-100 d-block text-center mt-5">
+    <a href="{{ url('register') }}" class="btn btn-lg btn-main rounded-pill btn-custom px-4 arrow px-5">
+      {{ __('auth.get_started') ?? 'Get Started' }}
     </a>
   </div>
-	@endif
 
-  @if ($settings->google_adsense && $settings->google_ads_index == 'on' && $settings->google_adsense_index != '')
+  @if ($settings->google_adsense ?? false && $settings->google_ads_index == 'on' && $settings->google_adsense_index != '')
     <div class="col-md-12 mt-3">
       {!! $settings->google_adsense_index !!}
     </div>
   @endif
-</div><!-- container photos -->
+</div><!-- container -->
 
-    @if ($images->count() != 0)
     <section class="section py-5 py-large bg-light">
       <div class="container">
         <div class="row align-items-center">
         <div class="col-12 col-lg-7 text-center mb-3 px-5">
-          <img src="{{ url('public/img', $settings->img_section) }}" class="img-fluid">
+          <img src="{{ url('public/img', $settings->img_section ?? 'default.png') }}" class="img-fluid">
         </div>
         <div class="col-12 col-lg-5 text-lg-start text-center">
-          <h1 class="m-0 card-profile">{{ __('misc.title_section_home') }}</h1>
+          <h1 class="m-0 card-profile">{{ __('misc.title_section_home') ?? 'Build Your Next Project' }}</h1>
           <div class="col-12 p-0">
-            <p class="py-4 m-0 text-muted">{{ __('misc.desc_section_home') }}</p>
+            <p class="py-4 m-0 text-muted">{{ __('misc.desc_section_home') ?? 'A powerful starter kit with everything you need' }}</p>
           </div>
-          <a href="{{ url('latest') }}" class="btn btn-lg btn-main rounded-pill btn-custom  px-4 arrow">
-            {{ __('misc.explore') }}
+          <a href="{{ url('pricing') }}" class="btn btn-lg btn-main rounded-pill btn-custom  px-4 arrow">
+            {{ __('misc.explore') ?? 'View Plans' }}
           </a>
         </div>
       </div>
       </div>
     </section>
-    @endif
 
     @if ($settings->show_counter == 'on')
     <section class="section py-2 bg-dark text-white counter-stats">

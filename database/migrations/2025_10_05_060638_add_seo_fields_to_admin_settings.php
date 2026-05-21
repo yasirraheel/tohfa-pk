@@ -11,28 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('admin_settings', function (Blueprint $table) {
-            // SEO Meta Tags
-            $table->string('seo_title', 200)->nullable()->after('title');
-            $table->text('seo_description')->nullable()->after('seo_title');
-            $table->text('seo_keywords')->nullable()->after('seo_description');
-            
-            // Open Graph Tags
-            $table->string('og_title', 200)->nullable()->after('seo_keywords');
-            $table->text('og_description')->nullable()->after('og_title');
-            $table->string('og_image', 500)->nullable()->after('og_description');
-            $table->string('og_type', 50)->default('website')->after('og_image');
-            $table->string('og_site_name', 200)->nullable()->after('og_type');
-            
-            // Twitter Card Tags
-            $table->string('twitter_card', 50)->default('summary_large_image')->after('og_site_name');
-            $table->string('twitter_site', 100)->nullable()->after('twitter_card');
-            $table->string('twitter_creator', 100)->nullable()->after('twitter_site');
-            
-            // Additional SEO
-            $table->string('canonical_url', 500)->nullable()->after('twitter_creator');
-            $table->string('robots', 100)->default('index,follow')->after('canonical_url');
-        });
+        if (Schema::hasTable('admin_settings') && !Schema::hasColumn('admin_settings', 'seo_title')) {
+            Schema::table('admin_settings', function (Blueprint $table) {
+                // SEO Meta Tags
+                $table->string('seo_title', 200)->nullable()->after('title');
+                $table->text('seo_description')->nullable()->after('seo_title');
+                $table->text('seo_keywords')->nullable()->after('seo_description');
+                
+                // Open Graph Tags
+                $table->string('og_title', 200)->nullable()->after('seo_keywords');
+                $table->text('og_description')->nullable()->after('og_title');
+                $table->string('og_image', 500)->nullable()->after('og_description');
+                $table->string('og_type', 50)->default('website')->after('og_image');
+                $table->string('og_site_name', 200)->nullable()->after('og_type');
+                
+                // Twitter Card Tags
+                $table->string('twitter_card', 50)->default('summary_large_image')->after('og_site_name');
+                $table->string('twitter_site', 100)->nullable()->after('twitter_card');
+                $table->string('twitter_creator', 100)->nullable()->after('twitter_site');
+                
+                // Additional SEO
+                $table->string('canonical_url', 500)->nullable()->after('twitter_creator');
+                $table->string('robots', 100)->default('index,follow')->after('canonical_url');
+            });
+        }
     }
 
     /**

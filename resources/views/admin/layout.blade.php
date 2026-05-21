@@ -87,6 +87,14 @@
               </li><!-- /end list -->
             @endif
 
+              @if (auth()->user()->hasPermission('general_settings'))
+              <li class="nav-item">
+                  <a href="{{ route('eid-tohfa.index') }}" class="nav-link text-truncate @if (request()->is('panel/admin/eid-tohfa*')) active @endif">
+                      <i class="bi-gift me-2"></i> Eid Tohfa
+                  </a>
+              </li><!-- /end list -->
+            @endif
+
               @if (auth()->user()->hasPermission('maintenance_mode'))
               <li class="nav-item">
                   <a href="{{ url('panel/admin/maintenance') }}" class="nav-link text-truncate @if (request()->is('panel/admin/maintenance')) active @endif">
@@ -103,10 +111,10 @@
               </li><!-- /end list -->
             @endif
 
-              <!-- Purchases menu removed - stock photo functionality -->
+              <!-- Purchases menu removed for the starter kit -->
 
-            <!-- Images permission check removed - stock photo functionality -->
-              <!-- Images menu removed - stock photo functionality -->
+            <!-- Images permission check removed for the starter kit -->
+              <!-- Images menu removed for the starter kit -->
 
             @if (auth()->user()->hasPermission('deposits'))
               <li class="nav-item">
@@ -226,7 +234,7 @@
               </li><!-- /end list -->
               @endif
 
-              <!-- Collections menu removed - stock photo functionality -->
+              <!-- Collections menu removed for the starter kit -->
 
               @if (auth()->user()->hasPermission('languages'))
               <li class="nav-item">
@@ -282,7 +290,7 @@
               </li><!-- /end list -->
                 @endif
 
-              <!-- Images reported menu removed - stock photo functionality -->
+              <!-- Images reported menu removed for the starter kit -->
 
               @if (auth()->user()->hasPermission('pages'))
               <li class="nav-item">
@@ -401,102 +409,6 @@
     <script src="{{ asset('public/js/switch-theme.js') }}?v={{$settings->version}}"></script>
 
     @yield('javascript')
-
-    @auth
-    <script>
-    // Load SevenLabs user data when dropdown is opened (Admin Panel)
-    document.addEventListener('DOMContentLoaded', function() {
-        const dropdownToggle = document.getElementById('dropdownUser2');
-        const balanceElement = document.getElementById('balance-amount');
-        const creditsElement = document.getElementById('credits-amount');
-        
-        console.log('Admin Panel - Dropdown elements found:', {
-            dropdownToggle: !!dropdownToggle,
-            balanceElement: !!balanceElement,
-            creditsElement: !!creditsElement
-        });
-        
-        if (dropdownToggle && balanceElement && creditsElement) {
-            dropdownToggle.addEventListener('show.bs.dropdown', function() {
-                console.log('Admin Panel - Dropdown opened!');
-                console.log('Admin Panel - Balance element text:', balanceElement.textContent);
-                console.log('Admin Panel - Credits element text:', creditsElement.textContent);
-                
-                // Always load data for debugging
-                console.log('Admin Panel - Loading user data...');
-                loadUserData();
-            });
-        } else {
-            console.error('Admin Panel - Missing elements:', {
-                dropdownToggle: !!dropdownToggle,
-                balanceElement: !!balanceElement,
-                creditsElement: !!creditsElement
-            });
-        }
-        
-        function showLoadingDots(element) {
-            let dots = 0;
-            const interval = setInterval(() => {
-                dots = (dots + 1) % 4;
-                element.textContent = '.'.repeat(dots);
-            }, 500);
-            return interval;
-        }
-        
-        function loadUserData() {
-            // Show animated loading dots
-            const balanceInterval = showLoadingDots(balanceElement);
-            const creditsInterval = showLoadingDots(creditsElement);
-            
-            console.log('Loading user credits from:', '{{ url("api/user/credits") }}');
-            
-            // Get user credits from Laravel (not SevenLabs API)
-            fetch('{{ url("api/user/credits") }}', {
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                console.log('API Response status:', response.status);
-                return response.json();
-            })
-            .then(data => {
-                console.log('API Response data:', data);
-                
-                // Clear loading intervals
-                clearInterval(balanceInterval);
-                clearInterval(creditsInterval);
-                
-                if (data.success) {
-                    // Update balance (show user's own balance)
-                    balanceElement.textContent = data.user_balance || 0;
-                    
-                    // Update credits (show user's own credits)
-                    creditsElement.textContent = data.user_credits || 0;
-                    
-                    console.log('Updated balance:', data.user_balance);
-                    console.log('Updated credits:', data.user_credits);
-                } else {
-                    // Show error state
-                    balanceElement.textContent = 'Error';
-                    creditsElement.textContent = 'Error';
-                }
-            })
-            .catch(error => {
-                // Clear loading intervals
-                clearInterval(balanceInterval);
-                clearInterval(creditsInterval);
-                
-                console.error('Error loading user data:', error);
-                balanceElement.textContent = 'Error';
-                creditsElement.textContent = 'Error';
-            });
-        }
-    });
-    </script>
-    @endauth
 
     @if (session('unauthorized'))
       <script type="text/javascript">

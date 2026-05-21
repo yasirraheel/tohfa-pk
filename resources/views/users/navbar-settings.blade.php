@@ -29,14 +29,6 @@
 		</a><!-- end link -->
   @endif
 
-    {{-- Images menu removed - not applicable for TTS application --}}
-
-    {{-- Sales menu removed - not applicable for TTS application --}}
-
-    {{-- My Purchases menu removed - not applicable for TTS application --}}
-
-    {{-- Downloads menu removed - not applicable for TTS application --}}
-
     @if ($settings->sell_option == 'on')
     <a class="list-group-item list-group-item-action d-flex justify-content-between @if (request()->is('account/subscription'))active @endif" href="{{ url('account/subscription') }}">
 			<div>

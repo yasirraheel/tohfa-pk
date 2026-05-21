@@ -33,9 +33,11 @@
 
     @include('includes.css_general')
 
-    @if ($settings->status_pwa)
+    {{-- PWA disabled - was causing "extension" error
+    @if (isset($settings->status_pwa) && $settings->status_pwa)
       @laravelPWA
     @endif
+    --}}
     
     @yield('css')
 

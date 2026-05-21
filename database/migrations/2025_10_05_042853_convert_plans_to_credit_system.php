@@ -11,21 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('plans', function (Blueprint $table) {
-            // Remove photo-related columns
-            $table->dropColumn([
-                'downloadable_content',
-                'downloads_per_month', 
-                'download_limits',
-                'license',
-                'popular'
-            ]);
-            
-            // Add credit-related columns
-            $table->unsignedInteger('credits')->default(0)->after('price_year');
-            $table->enum('duration', ['month', 'year'])->default('month')->after('credits');
-            $table->boolean('unused_credits_rollover')->default(false)->after('duration');
-        });
+        if (Schema::hasTable('plans')) {
+            Schema::table('plans', function (Blueprint $table) {
+                // Remove photo-related columns if they exist
+                if (Schema::hasColumn('plans', 'downloadable_content')) {
+                    $table->dropColumn([
+                        'downloadable_content',
+                        'downloads_per_month', 
+                        'download_limits',
+                        'license',
+                        'popular'
+                    ]);
+                }
+                
+                // Add credit-related columns if they don't exist
+                if (!Schema::hasColumn('plans', 'credits')) {
+                    $table->unsignedInteger('credits')->default(0)->after('price_year');
+                    $table->enum('duration', ['month', 'year'])->default('month')->after('credits');
+                    $table->boolean('unused_credits_rollover')->default(false)->after('duration');
+                }
+            });
+        }
     }
 
     /**

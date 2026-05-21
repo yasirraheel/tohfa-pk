@@ -19,7 +19,7 @@
       <h1 class="mb-0">
         {{ Lang::has('categories.' . $category->slug) ? __('categories.' . $category->slug) : $category->name }}
       </h1>
-      @if ($category->subcategories)
+      @if ($category->subcategories ?? false)
         <div class="my-3">
           @foreach ($category->subcategories as $subcategory)
           <a href="{{ url('category', [$category->slug, $subcategory->slug]) }}" class="mb-2 btn btn-sm rounded-pill btn-outline-custom btn-tags px-4 me-1">
@@ -27,10 +27,11 @@
           </a>
           @endforeach
         </div>
-        @endif
-      <p class="lead text-muted mt-0">
-        {{ '('.number_format($images->total()).') '.trans_choice('misc.images_available_category',$images->total()) }}
-      </p>
+      @endif
+      
+      @if ($category->description)
+        <p class="lead text-muted mt-3">{{ $category->description }}</p>
+      @endif
     </div>
 
     <!-- Col MD -->
@@ -38,25 +39,32 @@
 
       <div class="row">
 
-        @if ($images->total() != 0)
+        @if (isset($items) && $items->count() > 0)
         <div class="dataResult">
-          @include('includes.images')
-          @include('includes.pagination-links')
+          {{-- Add your content items here --}}
+          @foreach($items as $item)
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title">{{ $item->title ?? 'Item' }}</h5>
+                  <p class="card-text">{{ $item->description ?? '' }}</p>
+                </div>
+              </div>
+            </div>
+          @endforeach
         </div>
 
         @else
-        <h3 class="mt-0 fw-light">
-          {{ __('misc.no_results_found') }}
-        </h3>
+        <div class="text-center py-5">
+          <i class="bi bi-folder2-open display-1 text-muted"></i>
+          <h3 class="mt-3 fw-light">
+            {{ __('misc.no_content_in_category') ?? 'No content available in this category yet' }}
+          </h3>
+          <p class="text-muted">{{ __('misc.check_back_later') ?? 'Check back later for updates' }}</p>
+        </div>
         @endif
 
       </div><!-- row -->
     </div><!-- container wrap-ui -->
 </section>
-@endsection
-
-@section('javascript')
-<script type="text/javascript">
-  $('#imagesFlex').flexImages({ rowHeight: 320 });
-</script>
 @endsection

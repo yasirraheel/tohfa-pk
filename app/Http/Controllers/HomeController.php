@@ -34,13 +34,12 @@ class HomeController extends Controller
     }
 
     $categories = Categories::select(['name', 'slug', 'thumbnail'])->where('mode', 'on')->orderBy('name')->simplePaginate(4);
-    $images     = Query::latestImagesHome();
-    $featured   = in_array(config('settings.show_images_index'), ['featured', 'both']) ? Query::featuredImages() : null;
 
-    // Simplified for universal starter kit - just get top categories without image count
+    // Simplified for universal starter kit - just get top categories
     $popularCategories = Categories::where('mode', 'on')->take(5)->get();
 
     if ($popularCategories->count() != 0) {
+      $popularCategorieArray = [];
       foreach ($popularCategories as $popularCategorie) {
         $categoryName = Lang::has('categories.' . $popularCategorie->slug) ? __('categories.' . $popularCategorie->slug) : $popularCategorie->name;
 
@@ -55,61 +54,7 @@ class HomeController extends Controller
       'index.home',
       [
         'categories' => $categories,
-        'images' => $images,
-        'featured' => $featured,
         'categoryPopular' => $categoryPopular
-      ]
-    );
-  }
-
-  public function sevenhome()
-  {
-    try {
-      // Check Database access
-      AdminSettings::select('id')->first();
-    } catch (\Exception $e) {
-      // Redirect to Installer
-      return redirect('installer/script');
-    }
-
-    // Get settings for the TTS interface
-    $settings = AdminSettings::first();
-
-    // Get basic stats for display
-    $userCount = User::count();
-    $downloadsCount = 0; // Placeholder since downloads table was removed
-    $imagesCount = 0; // Placeholder since images table was removed
-    $categoriesCount = Categories::where('mode', 'on')->count();
-
-    // Get categories for display
-    $categories = Categories::select(['name', 'slug', 'thumbnail'])->where('mode', 'on')->orderBy('name')->simplePaginate(4);
-
-    // Simplified for universal starter kit - just get top categories without image count
-    $popularCategories = Categories::where('mode', 'on')->take(5)->get();
-
-    if ($popularCategories->count() != 0) {
-      foreach ($popularCategories as $popularCategorie) {
-        $categoryName = Lang::has('categories.' . $popularCategorie->slug) ? __('categories.' . $popularCategorie->slug) : $popularCategorie->name;
-
-        $popularCategorieArray[]  = '<a style="color:#FFF;" href="' . url('category', $popularCategorie->slug) . '">' . $categoryName . '</a>';
-      }
-      $categoryPopular = implode(', ', $popularCategorieArray);
-    } else {
-      $categoryPopular = false;
-    }
-
-    return view(
-      'index.sevenhome',
-      [
-        'settings' => $settings,
-        'categories' => $categories,
-        'categoryPopular' => $categoryPopular,
-        'userCount' => $userCount,
-        'downloadsCount' => $downloadsCount,
-        'imagesCount' => $imagesCount,
-        'categoriesCount' => $categoriesCount,
-        'images' => collect([]), // Empty collection for compatibility
-        'featured' => null, // No featured images in TTS interface
       ]
     );
   }
@@ -151,18 +96,15 @@ class HomeController extends Controller
   public function getSearch()
   {
     $q = request()->get('q');
-    $images = Query::searchImages();
+    // Universal starter kit - customize this for your content type
+    $results = collect([]);
 
     //<--- * If $q is empty or is minus to 1 * ---->
     if ($q == '' || strlen($q) <= 2) {
-      return redirect('/latest');
+      return redirect('/');
     }
 
-    if (request()->ajax()) {
-      return view('includes.images')->with($images)->render();
-    }
-
-    return view('default.search')->with($images);
+    return view('default.search')->with(['results' => $results, 'query' => $q]);
   }
 
   public function members()
@@ -178,112 +120,45 @@ class HomeController extends Controller
 
   public function premium()
   {
-    if (config('settings.sell_option') == 'off') {
-      abort(404);
-    }
-
-    $images = Query::premiumImages();
-
-    if (request()->ajax()) {
-      return view('includes.images', ['images' => $images])->render();
-    }
-
-    return view('index.explore', [
-      'images' => $images,
-      'title' => __('misc.premium'),
-      'description' => __('misc.premium_desc'),
-    ]);
+    // Redirect to pricing page for universal starter kit
+    return redirect('pricing');
   }
 
   public function latest()
   {
-    $images = Query::latestImages();
-
-    if (request()->ajax()) {
-      return view('includes.images', ['images' => $images])->render();
-    }
-
-    return view('index.explore', [
-      'images' => $images,
-      'title' => __('misc.latest'),
-      'description' => __('misc.latest_desc'),
-    ]);
+    // Universal starter kit - redirect to home or customize for your content
+    return redirect('/');
   }
 
   public function featured()
   {
-    $images = Query::featuredImages();
-
-    if (request()->ajax()) {
-      return view('includes.images', ['images' => $images])->render();
-    }
-
-    return view('index.explore', [
-      'images' => $images,
-      'title' => __('misc.featured'),
-      'description' => __('misc.featured_desc'),
-    ]);
+    // Universal starter kit - redirect to home or customize for your content
+    return redirect('/');
   }
 
 
   public function popular()
   {
-    $images = Query::popularImages();
-
-    if (request()->ajax()) {
-      return view('includes.images', ['images' => $images])->render();
-    }
-
-    return view('index.explore', [
-      'images' => $images,
-      'title' => __('misc.popular'),
-      'description' => __('misc.popular_desc'),
-    ]);
+    // Universal starter kit - redirect to home or customize for your content
+    return redirect('/');
   }
 
   public function commented()
   {
-    $images = Query::commentedImages();
-
-    if (request()->ajax()) {
-      return view('includes.images', ['images' => $images])->render();
-    }
-
-    return view('index.explore', [
-      'images' => $images,
-      'title' => __('misc.most_commented'),
-      'description' => __('misc.most_commented_desc'),
-    ]);
+    // Universal starter kit - redirect to home or customize for your content
+    return redirect('/');
   }
 
   public function viewed()
   {
-    $images = Query::viewedImages();
-
-    if (request()->ajax()) {
-      return view('includes.images', ['images' => $images])->render();
-    }
-
-    return view('index.explore', [
-      'images' => $images,
-      'title' => __('misc.most_viewed'),
-      'description' => __('misc.most_viewed_desc'),
-    ]);
+    // Universal starter kit - redirect to home or customize for your content
+    return redirect('/');
   }
 
   public function downloads()
   {
-    $images = Query::downloadsImages();
-
-    if (request()->ajax()) {
-      return view('includes.images', ['images' => $images])->render();
-    }
-
-    return view('index.explore', [
-      'images' => $images,
-      'title' => __('misc.most_downloads'),
-      'description' => __('misc.most_downloads_desc'),
-    ]);
+    // Universal starter kit - redirect to home or customize for your content
+    return redirect('/');
   }
 
   public function categories()
@@ -294,54 +169,31 @@ class HomeController extends Controller
 
   public function category($slug)
   {
-    $images = Query::categoryImages($slug);
-
-    if (request()->ajax()) {
-      return view('includes.images')->with($images)->render();
-    }
-
-    return view('default.category')->with($images);
+    // Get category info
+    $category = Categories::where('slug', $slug)->where('mode', 'on')->firstOrFail();
+    
+    return view('default.category')->with([
+      'category' => $category,
+      'items' => collect([]) // Empty for now - add your content here
+    ]);
   }
 
   public function subcategory($slug, $subcategory)
   {
-    $images = Query::subCategoryImages($slug, $subcategory);
-
-    if (request()->ajax()) {
-      return view('includes.images')->with($images)->render();
-    }
-
-    return view('default.subcategory')->with($images);
+    // Universal starter kit - customize for your content
+    return redirect('category/' . $slug);
   }
 
   public function cameras($slug)
   {
-    if (strlen($slug) > 3) {
-      $images = Query::camerasImages($slug);
-
-      if (request()->ajax()) {
-        return view('includes.images')->with($images)->render();
-      }
-
-      return view('default.cameras')->with($images);
-    } else {
-      abort('404');
-    }
+    // Not applicable for universal starter kit
+    abort(404);
   }
 
   public function colors($slug)
   {
-    if (strlen($slug) == 6) {
-      $images = Query::colorsImages($slug);
-
-      if (request()->ajax()) {
-        return view('includes.images')->with($images)->render();
-      }
-
-      return view('default.colors')->with($images);
-    } else {
-      abort('404');
-    }
+    // Not applicable for universal starter kit
+    abort(404);
   }
 
   public function collections(Request $request)
@@ -447,33 +299,13 @@ class HomeController extends Controller
 
   public function tagsShow($slug)
   {
-    $slug = str_replace('_', ' ', $slug);
-
-    if (strlen($slug) > 1) {
-      $images = Query::tagsImages($slug);
-
-      if (request()->ajax()) {
-        return view('includes.images')->with($images)->render();
-      }
-
-      return view('default.tags-show')->with($images);
-    } else {
-      abort('404');
-    }
+    // Universal starter kit - customize for your content tags
+    return redirect('/');
   }
 
   public function vectors()
   {
-    $images = Query::vectors();
-
-    if (request()->ajax()) {
-      return view('includes.images', ['images' => $images])->render();
-    }
-
-    return view('index.explore', [
-      'images' => $images,
-      'title' => __('misc.vectors'),
-      'description' => __('misc.vectors_desc'),
-    ]);
+    // Not applicable for universal starter kit
+    abort(404);
   }
 }

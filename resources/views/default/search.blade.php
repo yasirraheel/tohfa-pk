@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title'){{ e($title) }}@endsection
+@section('title'){{ __('misc.search_results') ?? 'Search Results' }}@endsection
 
 @section('content')
 <section class="section section-sm">
@@ -10,40 +10,39 @@
 
     <div class="col-lg-12 py-5">
   		<h1 class="mb-0 text-break">
-  			{{ trans('misc.result_of') }} "{{ $q }}"
+  			{{ trans('misc.result_of') ?? 'Search results for' }} "{{ $query }}"
   		</h1>
-  		<p class="lead text-muted mt-0">{{ $total }} {{ trans_choice('misc.images_plural',$total) }}</p>
+  		<p class="lead text-muted mt-0">{{ $results->count() }} {{ __('misc.results_found') ?? 'results found' }}</p>
   	  </div>
 
 		<div class="col-md-12">
-			@if ($images->total() != 0)
+			@if ($results->count() > 0)
 
-			<div class="d-block w-100 mb-3 text-end">		
-				<select class="ms-2 form-select d-inline-block w-auto filter filter-explore">
-					<option @if (! request()->get('sort')) selected @endif value="{{ url()->current() }}?q={{ request()->get('q') }}">{{trans('misc.latest')}}</option>
-					<option @if (request()->get('sort') == 'oldest') selected @endif value="{{ url()->full() }}&sort=oldest">{{trans('misc.oldest')}}</option>
-					</select>
+				<div class="row">
+					@foreach($results as $result)
+						<div class="col-md-4 mb-4">
+							<div class="card h-100">
+								<div class="card-body">
+									<h5 class="card-title">{{ $result->title ?? 'Result' }}</h5>
+									<p class="card-text">{{ $result->description ?? '' }}</p>
+								</div>
+							</div>
+						</div>
+					@endforeach
 				</div>
 
-				<div class="dataResult">
-			     @include('includes.images')
-					 @include('includes.pagination-links')
-				 </div>
-
 	  @else
-	    		<h3 class="mt-0 fw-light">
-	    		{{ trans('misc.no_results_found') }}
-	    	</h3>
+	    		<div class="text-center py-5">
+					<i class="bi bi-search display-1 text-muted"></i>
+	    			<h3 class="mt-3 fw-light">
+	    				{{ trans('misc.no_results_found') ?? 'No results found' }}
+	    			</h3>
+					<p class="text-muted">{{ __('misc.try_different_keywords') ?? 'Try using different keywords' }}</p>
+				</div>
 	    	@endif
 
 		</div><!-- col-md-12 -->
 	</div><!-- row -->
 </div><!-- container -->
 </section>
-@endsection
-
-@section('javascript')
-<script type="text/javascript">
- $('#imagesFlex').flexImages({ rowHeight: 320 });
-</script>
 @endsection

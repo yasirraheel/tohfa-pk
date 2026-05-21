@@ -12,9 +12,9 @@ return [
     | you want to customize your views to better match your application.
     |
     */
-    "welcome_text" => "ShahabTech",
-    "welcome_subtitle" => "Fotos de stock gratuitas y premium",
-    "description" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut tortor rutrum massa efficitur tincidunt vel nec lacus. Curabitur porta aliquet diam, eu gravida neque lacinia.",
-  	"keywords" => "fotos gratis,stock fotos,stock gratis fotos",
+    "welcome_text" => "Starter Kit",
+    "welcome_subtitle" => "Listo para crear tu próximo proyecto",
+    "description" => "Un starter limpio con autenticación, páginas, enlace de blog, formulario de contacto, ajustes y administración.",
+    "keywords" => "starter kit,aplicación web,panel admin,autenticación,contacto,páginas",
 
 ];

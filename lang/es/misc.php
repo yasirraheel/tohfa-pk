@@ -294,7 +294,7 @@ return array(
 	'yes_withdraw' => '¡Sí, Retirar!',
 	'add_funds' => 'Agregar Fondos',
 	'funds' => 'Fondos',
-	'add_funds_desc' => 'Agregar Fondos - ShahabTech',
+	'add_funds_desc' => 'Agregar Fondos',
 	'debit_credit_card' => 'Tarjeta de Crédito / Débito',
 	'handling_fee' => 'Tarifa de Transacción',
 	'amount_minimum' => 'El monto mínimo es :symbol:min :code', // Not remove :symbol:min and :code
@@ -547,7 +547,7 @@ return array(
 	'default_language' => 'Idioma por defecto',
 	'default_language_info' => 'Este idioma se tomará por defecto cuando el idioma del usuario no exista.',
 	'alert_pwa_https' => 'Debe usar HTTPS (SSL) para que PWA funcione.',
-	'pwa_short_name' => 'Nombre abreviado de la aplicación (Ej: ShahabTech)',
+	'pwa_short_name' => 'Nombre abreviado de la aplicación (Ej: Starter)',
 	'connect_stripe_account' => 'Cuenta Stripe Connect',
 	'view_stripe_account' => 'Ver cuenta Stripe',
 	'connected' => 'Conectado',
@@ -619,7 +619,7 @@ return array(
 	'stripe_text_info_5' => 'Indique su nombre y dirección de correo electrónico.',
 	'subscription_plan' => 'Plan :name',// Not remove  :name
 	'subscription_exists' => 'Tienes una suscripción activa.',
-	'agree_subscription' => 'Al hacer clic en pagar, acepta los :terms y autoriza a ShahabTech a realizar cargos en su método de pago de forma recurrente. Usted puede cancelar en cualquier momento.', // Not remove :term
+	'agree_subscription' => 'Al hacer clic en pagar, acepta los :terms y autoriza a esta aplicación a realizar cargos en su método de pago de forma recurrente. Usted puede cancelar en cualquier momento.', // Not remove :term
 	'terms_services' => 'Términos de servicio',
 	'subscription' => 'Suscripción',
 	'subscription_success' => '¡Suscripción creada con éxito!',
@@ -712,11 +712,4 @@ return array(
 	// Version 5.0
 	'default_theme' => 'Tema por defecto',
 
-	// SevenLabs API
-	'sevenlabs_api_key' => 'Clave API de SevenLabs',
-	'sevenlabs_api_key_info' => 'Ingrese su clave API de SevenLabs para habilitar las funciones de síntesis de voz',
-	'signup_bonus_credits' => 'Créditos de Bonificación de Registro',
-	'signup_bonus_credits_info' => 'Número de créditos para dar a los nuevos usuarios cuando se registren',
-	'system_balance' => 'Saldo del Sistema',
-	'system_credits' => 'Créditos del Sistema',
 );

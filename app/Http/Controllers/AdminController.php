@@ -107,39 +107,6 @@ class AdminController extends Controller
 		$totalUsers  = User::count();
 		$totalTransactions = Deposits::whereStatus('approved')->count();
 
-		// Fetch GenAI Pro API system balance and credits
-		$systemBalance = 0;
-		$systemCredits = 0;
-		$apiStatus = 'error';
-		
-		try {
-			$apiKey = Helper::getSevenLabsApiKey();
-			if ($apiKey) {
-				$response = \Illuminate\Support\Facades\Http::withHeaders([
-					'Authorization' => 'Bearer ' . $apiKey,
-					'Content-Type' => 'application/json'
-				])->get('https://genaipro.vn/api/v1/me');
-
-				if ($response->successful()) {
-					$userData = $response->json();
-					$systemBalance = $userData['balance'] ?? 0;
-					
-					// Calculate total credits from all credit entries
-					$systemCredits = 0;
-					if (isset($userData['credits']) && is_array($userData['credits'])) {
-						foreach ($userData['credits'] as $credit) {
-							if (isset($credit['amount'])) {
-								$systemCredits += $credit['amount'];
-							}
-						}
-					}
-					$apiStatus = 'success';
-				}
-			}
-		} catch (\Exception $e) {
-			\Log::error('Admin Dashboard - GenAI Pro API Error: ' . $e->getMessage());
-		}
-
 		return view('admin.dashboard', [
 			'earningNetAdmin' => $totalRevenue,
 			'label' => $label,
@@ -152,10 +119,7 @@ class AdminController extends Controller
 			'stat_revenue_week' => $stat_revenue_week,
 			'stat_revenue_last_week' => $stat_revenue_last_week,
 			'stat_revenue_month' => $stat_revenue_month,
-			'stat_revenue_last_month' => $stat_revenue_last_month,
-			'systemBalance' => $systemBalance,
-			'systemCredits' => $systemCredits,
-			'apiStatus' => $apiStatus
+			'stat_revenue_last_month' => $stat_revenue_last_month
 		]);
 	}
 
@@ -357,8 +321,6 @@ class AdminController extends Controller
 		$sql->link_privacy        = $request->link_privacy;
 		$sql->link_license        = $request->link_license;
 		$sql->link_blog           = $request->link_blog;
-		$sql->sevenlabs_api_key   = $request->sevenlabs_api_key;
-		$sql->signup_bonus_credits = $request->signup_bonus_credits;
 		$sql->captcha             = $request->captcha ?? 'off';
 		$sql->registration_active = $request->registration_active ?? '0';
 		$sql->email_verification  = $request->email_verification ?? '0';

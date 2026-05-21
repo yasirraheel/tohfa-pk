@@ -3,20 +3,6 @@
   <li><hr class="dropdown-divider"></li>
 @endif
 
-@if ($settings->sell_option == 'on')
-<li>
-  <span class="dropdown-item disable-item" id="sevenlabs-balance">
-    <i class="bi bi-cash-stack me-2"></i> {{ __('misc.balance') }}: <span id="balance-amount">...</span>
-  </span>
-</li>
-
-<li>
-  <span class="dropdown-item disable-item" id="sevenlabs-credits">
-    <i class="bi bi-credit-card me-2"></i> {{ __('misc.credits') }}: <span id="credits-amount">...</span>
-  </span>
-</li>
-@endif
-
 @if ($settings->daily_limit_downloads != 0 && auth()->user()->role != 'admin')
     <li>
         <span class="dropdown-item disable-item">

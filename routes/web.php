@@ -37,10 +37,18 @@ use App\Http\Controllers\AjaxController;
 */
 
 // Homepage
-Route::get('/', [HomeController::class, 'sevenhome'])->name('home');
+Route::get('/', function() {
+    $settings = \App\Models\EidTohfaSetting::pluck('value', 'key')->toArray();
+    $comments = \App\Models\EidTohfaComment::active()->get();
+    $notifications = \App\Models\EidTohfaNotification::active()->get();
+    $images = \App\Models\EidTohfaImage::active()->get();
+    return view('home', compact('settings', 'comments', 'notifications', 'images'));
+})->name('home');
 Route::get('home', function() {
     return redirect('/');
 });
+Route::post('eid-tohfa/comment', [\App\Http\Controllers\EidTohfaController::class, 'storeFrontendComment'])->name('eid-tohfa.comment.store');
+Route::post('eid-tohfa/lead', [\App\Http\Controllers\EidTohfaController::class, 'storeFrontendLead'])->name('eid-tohfa.lead.store');
 
 // Authentication
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -72,14 +80,6 @@ Route::get('tags/{tags}',[HomeController::class, 'tagsShow']);
 Route::get('search', [HomeController::class, 'getSearch']);
 Route::get('contact',[HomeController::class, 'contact']);
 Route::post('contact',[HomeController::class, 'contactStore']);
-
-// TTS Routes
-Route::get('tts/tasks', function() {
-    return view('tts.tasks');
-})->name('tts.tasks');
-
-// TTS Callback (no auth required - called by external API)
-Route::post('api/tts/callback', [App\Http\Controllers\Api\TtsController::class, 'callback']);
 
 // Account Verification
 Route::get('verify/account/{confirmation_code}', [HomeController::class, 'getVerifyAccount'])->where('confirmation_code','[A-Za-z0-9]+');
@@ -123,29 +123,6 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('comment/store',[CommentsController::class, 'store']);
     Route::post('comment/delete',[CommentsController::class, 'destroy']);
     Route::post('comment/like',[CommentsController::class, 'like']);
-
-    // User Credits API
-    Route::get('api/user/credits', [App\Http\Controllers\Api\TtsController::class, 'getUserCredits']);
-
-    // TTS API Routes (session-based authentication)
-    Route::prefix('api/tts')->group(function () {
-        // Generate TTS
-        Route::post('generate', [App\Http\Controllers\Api\TtsController::class, 'generate']);
-        
-        // Task Management
-        Route::get('task/{taskId}', [App\Http\Controllers\Api\TtsController::class, 'getTask']);
-        Route::get('tasks', [App\Http\Controllers\Api\TtsController::class, 'getTasks']);
-        Route::delete('task/{taskId}', [App\Http\Controllers\Api\TtsController::class, 'deleteTask']);
-        Route::post('task/{taskId}/subtitle', [App\Http\Controllers\Api\TtsController::class, 'exportSubtitle']);
-        
-        // Voice and Model info
-        Route::get('voices', [App\Http\Controllers\Api\TtsController::class, 'getVoices']);
-        Route::get('voices/local', [App\Http\Controllers\Api\TtsController::class, 'getLocalVoices']);
-        Route::get('models', [App\Http\Controllers\Api\TtsController::class, 'getModels']);
-        
-        // User info
-        Route::get('me', [App\Http\Controllers\Api\TtsController::class, 'getMe']);
-    });
 
     // AJAX Routes
     Route::get('ajax/notifications', [AjaxController::class, 'notifications']);
@@ -214,6 +191,30 @@ Route::group(['middleware' => 'role'], function() {
 
     Route::view('panel/admin/announcements','admin.announcements')->name('announcements');
     Route::post('panel/admin/announcements', [AdminController::class, 'storeAnnouncements']);
+
+    // Eid Tohfa Management
+    Route::get('panel/admin/eid-tohfa',[\App\Http\Controllers\EidTohfaController::class, 'index'])->name('eid-tohfa.index');
+    Route::get('panel/admin/eid-tohfa/edit',[\App\Http\Controllers\EidTohfaController::class, 'edit'])->name('eid-tohfa.edit');
+    Route::post('panel/admin/eid-tohfa/update',[\App\Http\Controllers\EidTohfaController::class, 'update'])->name('eid-tohfa.update');
+    Route::get('panel/admin/eid-tohfa/create',[\App\Http\Controllers\EidTohfaController::class, 'create'])->name('eid-tohfa.create');
+    Route::post('panel/admin/eid-tohfa/store',[\App\Http\Controllers\EidTohfaController::class, 'store'])->name('eid-tohfa.store');
+    Route::post('panel/admin/eid-tohfa/delete/{id}',[\App\Http\Controllers\EidTohfaController::class, 'destroy'])->name('eid-tohfa.destroy');
+    Route::get('panel/admin/eid-tohfa/initialize',[\App\Http\Controllers\EidTohfaController::class, 'initializeDefaults'])->name('eid-tohfa.initialize');
+    
+    // Comments
+    Route::post('panel/admin/eid-tohfa/comments/store',[\App\Http\Controllers\EidTohfaController::class, 'storeComment'])->name('eid-tohfa.comments.store');
+    Route::post('panel/admin/eid-tohfa/comments/update/{id}',[\App\Http\Controllers\EidTohfaController::class, 'updateComment'])->name('eid-tohfa.comments.update');
+    Route::post('panel/admin/eid-tohfa/comments/delete/{id}',[\App\Http\Controllers\EidTohfaController::class, 'destroyComment'])->name('eid-tohfa.comments.destroy');
+    
+    // Notifications
+    Route::post('panel/admin/eid-tohfa/notifications/store',[\App\Http\Controllers\EidTohfaController::class, 'storeNotification'])->name('eid-tohfa.notifications.store');
+    Route::post('panel/admin/eid-tohfa/notifications/update/{id}',[\App\Http\Controllers\EidTohfaController::class, 'updateNotification'])->name('eid-tohfa.notifications.update');
+    Route::post('panel/admin/eid-tohfa/notifications/delete/{id}',[\App\Http\Controllers\EidTohfaController::class, 'destroyNotification'])->name('eid-tohfa.notifications.destroy');
+    
+    // Images
+    Route::post('panel/admin/eid-tohfa/images/store',[\App\Http\Controllers\EidTohfaController::class, 'storeImage'])->name('eid-tohfa.images.store');
+    Route::post('panel/admin/eid-tohfa/images/update/{id}',[\App\Http\Controllers\EidTohfaController::class, 'updateImage'])->name('eid-tohfa.images.update');
+    Route::post('panel/admin/eid-tohfa/images/delete/{id}',[\App\Http\Controllers\EidTohfaController::class, 'destroyImage'])->name('eid-tohfa.images.destroy');
 
     // Members Management
     Route::get('panel/admin/members',[AdminUserController::class, 'index'])->name('members');
