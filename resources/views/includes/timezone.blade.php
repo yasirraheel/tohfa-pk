@@ -1,6 +1,9 @@
-<option value="Africa/Abidjan" >Africa/Abidjan</option>
-<option value="Africa/Accra" >Africa/Accra</option>
-<option value="Africa/Addis_Ababa" >Africa/Addis_Ababa</option>
+@php
+    $currentTz = $currentTimezone ?? env('TIMEZONE', 'UTC');
+@endphp
+<option value="Africa/Abidjan" {{ $currentTz == 'Africa/Abidjan' ? 'selected' : '' }}>Africa/Abidjan</option>
+<option value="Africa/Accra" {{ $currentTz == 'Africa/Accra' ? 'selected' : '' }}>Africa/Accra</option>
+<option value="Africa/Addis_Ababa" {{ $currentTz == 'Africa/Addis_Ababa' ? 'selected' : '' }}>Africa/Addis_Ababa</option>
 <option value="Africa/Algiers" >Africa/Algiers</option>
 <option value="Africa/Asmara" >Africa/Asmara</option>
 <option value="Africa/Bamako" >Africa/Bamako</option>

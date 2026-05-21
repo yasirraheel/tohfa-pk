@@ -217,7 +217,11 @@
                                             </td>
                                             <td>
                                                 @if($lead->latitude)
-                                                    <small>{{ number_format($lead->latitude, 4) }}, {{ number_format($lead->longitude, 4) }}</small>
+                                                    <small>{{ number_format($lead->latitude, 6) }}, {{ number_format($lead->longitude, 6) }}</small>
+                                                    <br>
+                                                    <a href="https://www.google.com/maps?q={{ $lead->latitude }},{{ $lead->longitude }}" target="_blank" class="btn btn-sm btn-outline-primary mt-1">
+                                                        <i class="bi bi-geo-alt-fill"></i> Map
+                                                    </a>
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif

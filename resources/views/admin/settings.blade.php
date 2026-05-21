@@ -78,6 +78,19 @@
 				 </div>
 			 </div>
 
+			 <div class="row mb-3">
+				 <label class="col-sm-2 col-form-labe text-lg-end">{{ __('misc.default_timezone') }}</label>
+				 <div class="col-sm-10">
+					 <select name="TIMEZONE" class="form-select">
+						 @php
+							 $currentTimezone = env('TIMEZONE', 'UTC');
+						 @endphp
+						 @include('includes.timezone-new')
+					</select>
+					<small class="d-block">Timezone for displaying dates and times across the application</small>
+				 </div>
+			 </div>
+
        <fieldset class="row mb-3">
          <legend class="col-form-label col-sm-2 pt-0 text-lg-end">{{ __('misc.sell_option') }}</legend>
          <div class="col-sm-10">

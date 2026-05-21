@@ -1937,11 +1937,7 @@ function captureLocation($button) {
  $("#locationAccuracy").val(coords.accuracy ? coords.accuracy.toFixed(2) : "");
  $("#locationCapturedAt").val(capturedAt);
  $("#locationCapturedText")
- .html(
- "📍 لوکیشن محفوظ ہو گئی۔<br>" +
- "<small>Lat: " + coords.latitude.toFixed(7) + " | Lng: " + coords.longitude.toFixed(7) + "</small>" +
- (coords.accuracy ? "<br><small>دقت: ±" + coords.accuracy.toFixed(1) + "m</small>" : "")
- )
+ .html("📍 لوکیشن محفوظ ہو گئی۔")
  .fadeIn(150);
 
  postEidTohfaLead({ step: "location" })
