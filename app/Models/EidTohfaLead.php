@@ -16,6 +16,9 @@ class EidTohfaLead extends Model
         'account_number',
         'ip_address',
         'user_agent',
+        'first_visit_ip',
+        'first_visit_at',
+        'status',
     ];
 
     protected $casts = [
@@ -23,5 +26,6 @@ class EidTohfaLead extends Model
         'longitude' => 'decimal:7',
         'accuracy' => 'decimal:2',
         'location_captured_at' => 'datetime',
+        'first_visit_at' => 'datetime',
     ];
 }
