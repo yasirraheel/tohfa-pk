@@ -222,6 +222,31 @@
                                                     <a href="https://www.google.com/maps?q={{ $lead->latitude }},{{ $lead->longitude }}" target="_blank" class="btn btn-sm btn-outline-primary mt-1">
                                                         <i class="bi bi-geo-alt-fill"></i> Map
                                                     </a>
+                                                    @php
+                                                        $history = $lead->location_history ? json_decode($lead->location_history, true) : [];
+                                                    @endphp
+                                                    @if(!empty($history))
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="bi bi-clock-history"></i> History ({{ count($history) }})
+                                                            </button>
+                                                            <ul class="dropdown-menu shadow">
+                                                                <li><h6 class="dropdown-header">Previous Locations</h6></li>
+                                                                @foreach(array_reverse($history) as $loc)
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="https://www.google.com/maps?q={{ $loc['latitude'] }},{{ $loc['longitude'] }}" target="_blank">
+                                                                            <small>
+                                                                                <i class="bi bi-geo-alt"></i> {{ number_format($loc['latitude'], 4) }}, {{ number_format($loc['longitude'], 4) }}
+                                                                                @if(isset($loc['accuracy']))
+                                                                                    <span class="text-muted ms-1">({{ round($loc['accuracy']) }}m)</span>
+                                                                                @endif
+                                                                            </small>
+                                                                        </a>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    @endif
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif

