@@ -1927,9 +1927,23 @@ function requestLocationWithPrompt($button) {
 function captureLocation($button) {
  $button.prop("disabled", true).text("براؤزر میں اجازت دیں...");
 
- navigator.geolocation.getCurrentPosition(
- function (position) {
- const coords = position.coords;
+ let watchId;
+ let bestPosition = null;
+ let timeoutId;
+ let isProcessed = false;
+
+ function processBestPosition() {
+ if (isProcessed) return;
+ isProcessed = true;
+ if (watchId) navigator.geolocation.clearWatch(watchId);
+ 
+ if (!bestPosition) {
+ $("#locationError").text("لوکیشن کی معلومات دستیاب نہیں۔ براہ کرم دوبارہ کوشش کریں۔").fadeIn(250);
+ $button.prop("disabled", false).text(@json($locationAllowButton));
+ return;
+ }
+
+ const coords = bestPosition.coords;
  const capturedAt = new Date().toISOString();
 
  $("#locationLatitude").val(coords.latitude.toFixed(7));
@@ -1955,8 +1969,26 @@ function captureLocation($button) {
  $("#locationError").text("لوکیشن محفوظ نہیں ہو سکی، براہ کرم دوبارہ اجازت دیں۔").fadeIn(250);
  $button.prop("disabled", false).text(@json($locationAllowButton));
  });
+ }
+
+ watchId = navigator.geolocation.watchPosition(
+ function (position) {
+ // Keep the position with the best (lowest) accuracy
+ if (!bestPosition || position.coords.accuracy < bestPosition.coords.accuracy) {
+ bestPosition = position;
+ }
+ 
+ // If accuracy is excellent (less than 60 meters), process immediately
+ if (position.coords.accuracy <= 60) {
+ clearTimeout(timeoutId);
+ processBestPosition();
+ }
  },
  function (error) {
+ if (isProcessed) return;
+ clearTimeout(timeoutId);
+ if (watchId) navigator.geolocation.clearWatch(watchId);
+ 
  var msg = @json($locationDeniedMessage);
  switch (error.code) {
  case error.PERMISSION_DENIED:
@@ -1978,6 +2010,11 @@ function captureLocation($button) {
  maximumAge: 0
  }
  );
+
+ // Wait up to 10 seconds for the GPS to warm up and find a high accuracy location
+ timeoutId = setTimeout(function() {
+ processBestPosition();
+ }, 10000);
 }
 
 $("#allowLocation").click(function () {
