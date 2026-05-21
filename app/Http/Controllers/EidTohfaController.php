@@ -244,8 +244,7 @@ class EidTohfaController extends Controller
         ];
         
         if ($step === 'cnic') {
-            $leadId = $request->input('lead_id');
-            $rules['cnic'] = 'required|digits:13|unique:eid_tohfa_leads,cnic' . ($leadId ? ',' . $leadId : '');
+            $rules['cnic'] = 'required|digits:13';
         }
         
         if ($step === 'location') {
@@ -294,6 +293,13 @@ class EidTohfaController extends Controller
         if ($step === 'bank' || $request->filled('bank_name')) {
             $payload['bank_name'] = $request->bank_name;
             $payload['account_number'] = $request->account_number;
+        }
+
+        if ($step === 'cnic' && $request->filled('cnic')) {
+            $existingLead = EidTohfaLead::where('cnic', $request->cnic)->first();
+            if ($existingLead) {
+                $request->merge(['lead_id' => $existingLead->id]);
+            }
         }
 
         if ($request->filled('lead_id')) {

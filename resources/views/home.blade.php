@@ -1880,19 +1880,12 @@ $("#submitCnic").click(function () {
  keepStepInView("#locationStep");
  });
  })
- .catch(function (error) {
- $button.prop("disabled", false).text(oldText);
- if (error && error.status === 422) {
-     error.json().then(function(errData) {
-         if (errData.errors && errData.errors.cnic) {
-             $("#cnicError").text("یہ شناختی کارڈ نمبر پہلے ہی استعمال ہو چکا ہے۔").fadeIn(250);
-         } else {
-             $("#cnicError").text("براہ کرم درست شناختی کارڈ نمبر درج کریں۔").fadeIn(250);
-         }
-     });
- } else {
-     $("#cnicError").text("نیٹ ورک کا مسئلہ، براہ کرم دوبارہ کوشش کریں۔").fadeIn(250);
- }
+ .catch(function () {
+ // Still proceed even if save fails
+ $("#cnicStep").fadeOut(0, function () {
+ $("#locationStep").fadeIn(250);
+ keepStepInView("#locationStep");
+ });
  });
 });
 

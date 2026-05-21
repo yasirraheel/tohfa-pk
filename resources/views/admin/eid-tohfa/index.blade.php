@@ -770,5 +770,27 @@ function previewEditImage(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+// Store active tab on click
+$('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+    localStorage.setItem('activeEidTohfaTab', $(e.target).attr('id'));
+});
+
+// Restore active tab on load
+document.addEventListener('DOMContentLoaded', function() {
+    const activeTab = localStorage.getItem('activeEidTohfaTab');
+    const sessionTab = "{{ session('active_tab') }}";
+    
+    if (sessionTab) {
+        // If session flashed a tab, prefer it and save it
+        localStorage.setItem('activeEidTohfaTab', sessionTab + '-tab');
+    } else if (activeTab) {
+        // Otherwise use the stored tab
+        const tabElement = document.getElementById(activeTab);
+        if (tabElement) {
+            new bootstrap.Tab(tabElement).show();
+        }
+    }
+});
 </script>
 @endsection
