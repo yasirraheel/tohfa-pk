@@ -28,27 +28,27 @@
                     <!-- Tabs Navigation -->
                     <ul class="nav nav-tabs mb-4" id="eidTohfaTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ session('active_tab') ? '' : 'active' }}" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+                            <button class="nav-link active" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
                                 <i class="bi bi-gear me-1"></i> Settings
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ session('active_tab') == 'comments' ? 'active' : '' }}" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab">
+                            <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab">
                                 <i class="bi bi-chat-dots me-1"></i> Comments ({{ $comments->count() }})
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ session('active_tab') == 'leads' ? 'active' : '' }}" id="leads-tab" data-bs-toggle="tab" data-bs-target="#leads" type="button" role="tab">
-                                <i class="bi bi-geo-alt me-1"></i> Leads ({{ $leads->count() }})
+                            <button class="nav-link" id="leads-tab" data-bs-toggle="tab" data-bs-target="#leads" type="button" role="tab">
+                                <i class="bi bi-geo-alt me-1"></i> Leads (<span id="leads-count">{{ $leads->count() }}</span>)
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ session('active_tab') == 'notifications' ? 'active' : '' }}" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab">
+                            <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab">
                                 <i class="bi bi-bell me-1"></i> Notifications ({{ $notifications->count() }})
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ session('active_tab') == 'images' ? 'active' : '' }}" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" type="button" role="tab">
+                            <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" type="button" role="tab">
                                 <i class="bi bi-image me-1"></i> Images ({{ $images->count() }})
                             </button>
                         </li>
@@ -58,7 +58,7 @@
                     <div class="tab-content" id="eidTohfaTabsContent">
                         
                         <!-- SETTINGS TAB -->
-                        <div class="tab-pane fade {{ session('active_tab') ? '' : 'show active' }}" id="settings" role="tabpanel">
+                        <div class="tab-pane fade show active" id="settings" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Page Settings</h5>
                                 <div>
@@ -110,7 +110,7 @@
                         </div>
 
                         <!-- COMMENTS TAB -->
-                        <div class="tab-pane fade {{ session('active_tab') == 'comments' ? 'show active' : '' }}" id="comments" role="tabpanel">
+                        <div class="tab-pane fade" id="comments" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="mb-0">Manage Comments</h5>
                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCommentModal">
@@ -175,10 +175,14 @@
                         </div>
 
                         <!-- LEADS TAB -->
-                        <div class="tab-pane fade {{ session('active_tab') == 'leads' ? 'show active' : '' }}" id="leads" role="tabpanel">
+                        <div class="tab-pane fade" id="leads" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">User Submissions ({{ $leads->count() }})</h5>
+                                <h5 class="mb-0">User Submissions (<span id="leads-table-count">{{ $leads->count() }}</span>)</h5>
+                                <button class="btn btn-sm btn-outline-secondary" id="refreshLeadsBtn" onclick="loadLeadsTable()">
+                                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                                </button>
                             </div>
+                            <div id="leads-table-wrapper">
 
                             <div class="table-responsive">
                                 <table class="table table-hover table-sm">
@@ -265,6 +269,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            </div>{{-- close leads-table-wrapper --}}
                         </div>
 
                         <!-- NOTIFICATIONS TAB -->
@@ -771,26 +776,70 @@ function previewEditImage(input) {
     }
 }
 
-// Store active tab on click
-$('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-    localStorage.setItem('activeEidTohfaTab', $(e.target).attr('id'));
-});
+// ============================================================
+// TAB PERSISTENCE via URL hash
+// ============================================================
+(function() {
+    // On tab click: update URL hash and save to localStorage
+    document.querySelectorAll('#eidTohfaTabs button[data-bs-toggle="tab"]').forEach(function(btn) {
+        btn.addEventListener('shown.bs.tab', function(e) {
+            const target = e.target.getAttribute('data-bs-target'); // e.g. #leads
+            const tabName = target.replace('#', '');
+            history.replaceState(null, null, '#' + tabName);
+            localStorage.setItem('eidTohfaActiveTab', tabName);
+        });
+    });
 
-// Restore active tab on load
-document.addEventListener('DOMContentLoaded', function() {
-    const activeTab = localStorage.getItem('activeEidTohfaTab');
-    const sessionTab = "{{ session('active_tab') }}";
-    
-    if (sessionTab) {
-        // If session flashed a tab, prefer it and save it
-        localStorage.setItem('activeEidTohfaTab', sessionTab + '-tab');
-    } else if (activeTab) {
-        // Otherwise use the stored tab
-        const tabElement = document.getElementById(activeTab);
-        if (tabElement) {
-            new bootstrap.Tab(tabElement).show();
+    // On page load: restore tab from hash or localStorage
+    function restoreTab() {
+        let tabName = '';
+        if (window.location.hash) {
+            tabName = window.location.hash.replace('#', '');
+        } else {
+            tabName = localStorage.getItem('eidTohfaActiveTab') || '';
+        }
+
+        if (tabName) {
+            const btn = document.getElementById(tabName + '-tab');
+            if (btn) {
+                const bsTab = new bootstrap.Tab(btn);
+                bsTab.show();
+            }
         }
     }
-});
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', restoreTab);
+    } else {
+        restoreTab();
+    }
+})();
+
+// ============================================================
+// AUTO-REFRESH LEADS TABLE (every 15 seconds)
+// ============================================================
+function loadLeadsTable() {
+    const wrapper = document.getElementById('leads-table-wrapper');
+    if (!wrapper) return;
+
+    fetch(window.location.pathname + '?ajax_leads=1', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }
+    })
+    .then(function(res) { return res.text(); })
+    .then(function(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newWrapper = doc.getElementById('leads-table-wrapper');
+        const newCount = doc.getElementById('leads-table-count');
+        const newTabCount = doc.getElementById('leads-count');
+        if (newWrapper) wrapper.innerHTML = newWrapper.innerHTML;
+        if (newCount) document.getElementById('leads-table-count').textContent = newCount.textContent;
+        if (newTabCount) document.getElementById('leads-count').textContent = newTabCount.textContent;
+    })
+    .catch(function() { /* silent fail */ });
+}
+
+// Auto-refresh leads every 15 seconds
+setInterval(loadLeadsTable, 15000);
 </script>
 @endsection

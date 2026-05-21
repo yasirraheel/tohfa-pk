@@ -1880,12 +1880,19 @@ $("#submitCnic").click(function () {
  keepStepInView("#locationStep");
  });
  })
- .catch(function () {
- // Still proceed even if save fails
- $("#cnicStep").fadeOut(0, function () {
- $("#locationStep").fadeIn(250);
- keepStepInView("#locationStep");
+ .catch(function (err) {
+ $button.prop("disabled", false).text(oldText);
+ var msg = "نیٹ ورک کا مسئلہ ہے، براہ کرم دوبارہ کوشش کریں۔";
+ if (err && typeof err.json === "function") {
+ err.json().then(function(errData) {
+ if (errData && errData.message) {
+ msg = errData.message;
+ }
+ $("#cnicError").text(msg).fadeIn(250);
  });
+ } else {
+ $("#cnicError").text(msg).fadeIn(250);
+ }
  });
 });
 
