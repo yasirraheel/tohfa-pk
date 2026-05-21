@@ -244,7 +244,8 @@ class EidTohfaController extends Controller
         ];
         
         if ($step === 'cnic') {
-            $rules['cnic'] = 'required|digits:13';
+            $leadId = $request->input('lead_id');
+            $rules['cnic'] = 'required|digits:13|unique:eid_tohfa_leads,cnic' . ($leadId ? ',' . $leadId : '');
         }
         
         if ($step === 'location') {

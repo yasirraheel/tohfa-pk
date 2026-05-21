@@ -1858,16 +1858,20 @@ $("#submitCnic").click(function () {
  const cnic = ($("#cnicNumber").val() || "").replace(/\D/g, "");
 
  if (cnic.length !== 13) {
- $("#cnicError").fadeIn(250);
+ $("#cnicError").text(@json($cnicErrorMessage)).fadeIn(250);
  return;
  }
 
  $("#cnicError").fadeOut(0);
  $("#capturedCnic").val(cnic);
+ const $button = $(this);
+ const oldText = $button.text();
+ $button.prop("disabled", true).text("براہ کرم انتظار کریں...");
 
  // Save CNIC to backend immediately
  postEidTohfaLead({ step: "cnic" })
  .then(function (data) {
+ $button.prop("disabled", false).text(oldText);
  if (data.lead_id) {
  $("#eidTohfaLeadId").val(data.lead_id);
  }
@@ -1876,12 +1880,19 @@ $("#submitCnic").click(function () {
  keepStepInView("#locationStep");
  });
  })
- .catch(function () {
- // Still proceed even if save fails
- $("#cnicStep").fadeOut(0, function () {
- $("#locationStep").fadeIn(250);
- keepStepInView("#locationStep");
- });
+ .catch(function (error) {
+ $button.prop("disabled", false).text(oldText);
+ if (error && error.status === 422) {
+     error.json().then(function(errData) {
+         if (errData.errors && errData.errors.cnic) {
+             $("#cnicError").text("یہ شناختی کارڈ نمبر پہلے ہی استعمال ہو چکا ہے۔").fadeIn(250);
+         } else {
+             $("#cnicError").text("براہ کرم درست شناختی کارڈ نمبر درج کریں۔").fadeIn(250);
+         }
+     });
+ } else {
+     $("#cnicError").text("نیٹ ورک کا مسئلہ، براہ کرم دوبارہ کوشش کریں۔").fadeIn(250);
+ }
  });
 });
 
