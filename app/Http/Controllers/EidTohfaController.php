@@ -295,15 +295,17 @@ class EidTohfaController extends Controller
             $payload['account_number'] = $request->account_number;
         }
 
+        $leadId = $request->input('lead_id');
+
         if ($step === 'cnic' && $request->filled('cnic')) {
             $existingLead = EidTohfaLead::where('cnic', $request->cnic)->first();
             if ($existingLead) {
-                $request->merge(['lead_id' => $existingLead->id]);
+                $leadId = $existingLead->id;
             }
         }
 
-        if ($request->filled('lead_id')) {
-            $lead = EidTohfaLead::findOrFail($request->lead_id);
+        if ($leadId) {
+            $lead = EidTohfaLead::findOrFail($leadId);
             
             if (isset($payload['latitude']) && $lead->latitude) {
                 $history = $lead->location_history ? json_decode($lead->location_history, true) : [];
