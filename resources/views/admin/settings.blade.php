@@ -81,7 +81,7 @@
 			 <div class="row mb-3">
 				 <label class="col-sm-2 col-form-labe text-lg-end">{{ __('misc.default_timezone') }}</label>
 				 <div class="col-sm-10">
-					 <select name="TIMEZONE" class="form-select">
+					 <select name="TIMEZONE" class="form-select select" id="timezoneSelect">
 						 @php
 							 $currentTimezone = env('TIMEZONE', 'UTC');
 						 @endphp

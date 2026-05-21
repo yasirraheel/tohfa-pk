@@ -373,6 +373,11 @@ class AdminController extends Controller
 		// Default locale
 		Helper::envUpdate('DEFAULT_LOCALE', $request->default_language);
 
+		// Timezone
+		if ($request->has('TIMEZONE')) {
+			Helper::envUpdate('TIMEZONE', $request->TIMEZONE);
+		}
+
 		// App Name
 		Helper::envUpdate('APP_NAME', ' "' . $request->title . '" ', true);
 
